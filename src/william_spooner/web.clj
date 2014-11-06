@@ -4,12 +4,13 @@
             [compojure.route :as route]
             [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [william-spooner.twitter :as twitter]))
 
 (defn splash []
   {:status 200
    :headers {"Content-Type" "text/plain"}
-   :body (pr-str "Hello, my name is William.")})
+   :body (pr-str "Look, " (twitter/colby :name))})
 
 (defroutes app
   (GET "/" []

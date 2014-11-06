@@ -1,4 +1,4 @@
-(ns william-spooner.core
+(ns william-spooner.wikipedia
   (:require [william-spooner.spoonerism :as sp])
   (:require [clj-http.client :as client])
   (:require [clojure.string :as str])
@@ -18,12 +18,10 @@
   (first (str/split phrase #" \(")))
 
 (defn best-candidate []
-  (first
-    (filterv #(sp/is-spoonerable (clean (:title %))) (titles-and-urls))))
+  (first (filterv #(sp/is-spoonerable (clean (:title %))) (titles-and-urls))))
 
-
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (let [phrase (clean (:title (best-candidate)))]
-    (println (str "Spoonerizing: " phrase " -> " (sp/spoonerize phrase)))))
+(defn get-spoonerism []
+  (let [candidate (best-candidate)]
+    {:link (candidate :fullurl)
+     :spoonerism (sp/spoonerize (clean (:title candidate)))
+     :original (clean (:title candidate))}))
