@@ -8,6 +8,7 @@
                  [compojure "1.1.8"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [environ "0.5.0"]]
+  :main ^:skip-aot william-spooner.web
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]]
   :hooks [environ.leiningen.hooks]
