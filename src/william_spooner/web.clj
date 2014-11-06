@@ -9,8 +9,8 @@
 
 (defn splash []
   {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body (pr-str "Look, " (twitter/colby :name))})
+   :headers {"Content-Type" "text/html"}
+   :body (str "<DOCTYPE html><html><body>The name's Wooner. <a href=\"http://en.wikipedia.org/wiki/William_Archibald_Spooner\">Spilliam Wooner</a>.</body></html>")})
 
 (defroutes app
   (GET "/" []
