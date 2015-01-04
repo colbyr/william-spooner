@@ -1,6 +1,8 @@
 (ns william-spooner.spoonerism
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :refer [subset?]]))
 
+(def abcs (set "abcdefghijklmnopqrstuvwxyz1234567890"))
 (def blacklist (hash-set "a" "an" "and" "but" "nor" "in" "is" "of" "or" "some" "that" "the" "this" "to"))
 (def ignore-pattern #"(?i)^[^aeiou]*$|\d")
 (def pattern #"(?i)^(gu|qu|o\'[^aeiou]*|y[^aeiou1-9]*|[^aeiouy1-9]*)([^\s]*$)")
@@ -30,6 +32,12 @@
       (if-not (> (count (set (pull 0 (map split-word candidate-words)))) 1)
         false
         (> (first (sort (map count candidate-words))) 2)))))
+
+(defn potential-index [phrase]
+  (let [words (vec (filter-candidates (parse-phrase phrase)))]
+    (if (subset? (set (str/lower-case (str/join "" words))) abcs)
+      (count words)
+      (* 2 (count words)))))
 
 (defn rotate [n coll]
   (let [c (count coll)]
