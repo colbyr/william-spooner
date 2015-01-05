@@ -5,7 +5,7 @@
 (def abcs (set "abcdefghijklmnopqrstuvwxyz1234567890"))
 (def blacklist (hash-set "a" "an" "and" "but" "nor" "in" "is" "of" "or" "some" "that" "the" "this" "to"))
 (def ignore-pattern #"(?i)^[^aeiou]*$|\d")
-(def pattern #"(?i)^(gu|qu|o\'[^aeiou]*|y[^aeiou1-9]*|[^aeiouy1-9]*)([^\s]*$)")
+(def pattern #"(?i)^(gu|[^aeiou]*qu|o\'[^aeiou]*|y[^aeiou1-9]*|[^aeiouy1-9]*)([^\s]*$)")
 
 
 (defn ignore? [word]
@@ -33,11 +33,38 @@
         false
         (> (first (sort (map count candidate-words))) 2)))))
 
+(defn potential-index-word-length [word]
+  (if (> (count word) 10)
+    2
+    (if (< (count word) 3)
+      1
+      0)))
+
+(defn potential-index-word-characters [word]
+  (let [characters (set (str/lower-case word))]
+    (if (subset? characters abcs) 0 1)))
+
+(defn potential-index-word-prefix [word]
+  (if (= (first (split-word word)) "") 1 0))
+
+(defn potential-index-word [word]
+  (+
+   1
+   (potential-index-word-length word)
+   (potential-index-word-characters word)
+   (potential-index-word-prefix word)))
+
+(defn potential-index-phrase [phrase]
+  (if-not (nil? (re-find #"[.,-=?!&^%$@()+'/\\\"]" phrase))
+    1
+    0))
+
 (defn potential-index [phrase]
   (let [words (vec (filter-candidates (parse-phrase phrase)))]
-    (if (subset? (set (str/lower-case (str/join "" words))) abcs)
-      (count words)
-      (* 2 (count words)))))
+    (+
+     (if (> (count words) 3) 1 0)
+     (potential-index-phrase phrase)
+     (reduce + 0 (map potential-index-word words)))))
 
 (defn rotate [n coll]
   (let [c (count coll)]
